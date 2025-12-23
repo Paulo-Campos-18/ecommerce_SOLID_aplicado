@@ -12,6 +12,8 @@ model Product {
   name  String
   type  String  // "physical" ou "digital" 
   price Float
+  weight    Float?
+  megabytes Int?
 }
 
 model Order {
