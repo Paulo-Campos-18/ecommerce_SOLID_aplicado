@@ -1,24 +1,26 @@
 import {Product} from '../domain/IProduct'
 import{ProductFactory} from '../domain/ProductFactory'
-import { IOrderRepository } from '@prisma/client';
+import { ILogger } from '../lib/ILogger';
+import { IOrderRepository } from '../repositories/IOrderRepository';
+
 export class orderService {
     private productFactory:ProductFactory
     private bd:IOrderRepository
+    private logger:ILogger 
 
-    constructor(){
+    constructor(bd:IOrderRepository,logger:ILogger){
         this.productFactory = new ProductFactory()
-        this.bd = new IOrderRepository();
+        this.bd = bd;
+        this.logger = logger;
     }
 
 
-    order(input:any) {
-
-        
+    async order(input:any) {
 
         // 1. VALIDAÇÃO (Deveria estar em outro lugar)
         if (!input.items || input.items.length === 0) {
-            logger.error('Tentativa de pedido sem itens');
-            return res.status(400).json({ error: 'Carrinho vazio' });
+            this.logger.error('Tentativa de pedido sem itens');
+            throw new EmptyOrderError();
         }
 
         // 2. CÁLCULO DE PREÇO E ESTOQUE (Regra de Negócio Misturada) 
@@ -26,7 +28,7 @@ export class orderService {
         let productsDetails = [];
 
         for (const item of input.items) {
-            const product = await prisma.product.findUnique({ where: { id: item.productId } });
+            const product = await this.bd.findById(item.productId);
 
             if (!product) {
                 return res.status(400).json({ error: `Produto ${item.productId} não encontrado` });

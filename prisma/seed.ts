@@ -1,6 +1,5 @@
-import { PrismaClient } from '@prisma/client'
+import { prisma } from '../src/repositories/PrismaOrderRepository'
 
-const prisma = new PrismaClient()
 
 async function main() {
   // Produto Físico
@@ -11,6 +10,8 @@ async function main() {
       name: 'O Programador Pragmático (Livro Físico)',
       type: 'physical',
       price: 100.0,
+      weight: 0.7,
+      megabytes: null
     },
   })
 
@@ -22,6 +23,8 @@ async function main() {
       name: 'Clean Code (E-book)',
       type: 'digital',
       price: 50.0,
+      megabytes: 26.3,
+      weight: null
     },
   })
 

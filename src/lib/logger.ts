@@ -1,16 +1,28 @@
-import winston from 'winston';
+import winston from "winston";
+import { ILogger } from "./ILogger";
 
-// Configura logs para aparecerem no Console e em um arquivo app.log
-const logger = winston.createLogger({
-  level: 'info',
-  format: winston.format.combine(
-    winston.format.timestamp(),
-    winston.format.json()
-  ),
-  transports: [
-    new winston.transports.Console(),
-    new winston.transports.File({ filename: 'app.log' })
-  ],
-});
+export class WinstonLogger implements ILogger {
+  private logger: winston.Logger;
 
-export default logger;
+  constructor() {
+    this.logger = winston.createLogger({
+      level: "info",
+      format: winston.format.combine(
+        winston.format.timestamp(),
+        winston.format.json()
+      ),
+      transports: [
+        new winston.transports.Console(),
+        new winston.transports.File({ filename: "app.log" }),
+      ],
+    });
+  }
+
+  info(message: string): void {
+    this.logger.info(message);
+  }
+
+  error(message: string): void {
+    this.logger.error(message);
+  }
+}
