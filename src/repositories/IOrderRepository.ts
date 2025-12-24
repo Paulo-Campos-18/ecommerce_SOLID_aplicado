@@ -5,5 +5,6 @@ import { DigitalProduct } from '../domain/DigitalProduct';
 
 export interface IOrderRepository{
     findById(id: number): Promise<Product | null>
+    create():Promise
 
 }

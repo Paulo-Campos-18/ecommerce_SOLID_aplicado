@@ -1,5 +1,7 @@
 import {Product} from '../domain/IProduct'
 import{ProductFactory} from '../domain/ProductFactory'
+import { ProcessOrderInput } from '../dtos/ProcessOrderInput';
+import { ProductDetail } from '../dtos/ProductDetail';
 import { ILogger } from '../lib/ILogger';
 import { IOrderRepository } from '../repositories/IOrderRepository';
 
@@ -15,39 +17,34 @@ export class orderService {
     }
 
 
-    async order(input:any) {
+    async order(input:ProcessOrderInput) {
 
         // 1. VALIDAÇÃO (Deveria estar em outro lugar)
         if (!input.items || input.items.length === 0) {
             this.logger.error('Tentativa de pedido sem itens');
-            throw new EmptyOrderError();
+            throw new Error(`Carrinho vazio`)
         }
 
         // 2. CÁLCULO DE PREÇO E ESTOQUE (Regra de Negócio Misturada) 
         let totalAmount = 0;
-        let productsDetails = [];
+        let productsDetails:ProductDetail[] = [];
 
         for (const item of input.items) {
             const product = await this.bd.findById(item.productId);
 
             if (!product) {
+                throw new Error(`Produto ${item.productId} não encontrado`)
                 return res.status(400).json({ error: `Produto ${item.productId} não encontrado` });
             }
 
-            // Violação de LSP e OCP: 
-            // Lógica condicional baseada em "tipo" (String). 
-            // Se adicionarmos "Serviço" ou "Assinatura", teremos que mexer aqui.
-            if (product.type === 'physical') {
-                totalAmount += product.price * item.quantity;
-                // Frete fixo simples
-                totalAmount += 10;
-            } else if (product.type === 'digital') {
-                totalAmount += product.price * item.quantity;
+
+            totalAmount += product.price * item.quantity;
+            totalAmount += product.calculateFreight();
                 // Produtos digitais não deveriam ter frete, ok.
                 // Mas se o aluno tentar tratar 'item' genericamente depois, vai ter problemas.
-            }
+            
 
-            productsDetails.push({ ...product, quantity: item.quantity });
+            productsDetails.push( new ProductDetail(product,item.quantity));
         }
 
         // 3. PROCESSAMENTO DE PAGAMENTO (Violação de OCP)
