@@ -1,9 +1,11 @@
 import nodemailer from 'nodemailer';
-import logger from './logger';
+import {LoggerProvider} from '../providers/LoggerProvider';
 
 let transporter: nodemailer.Transporter | null = null;
+const logger  = LoggerProvider.getLogger();
 
 export const getMailClient = async () => {
+  
   if (transporter) return transporter;
 
   // Cria uma conta de teste no Ethereal automaticamente

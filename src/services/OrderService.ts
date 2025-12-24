@@ -1,19 +1,15 @@
-import {Product} from '../domain/IProduct'
-import{ProductFactory} from '../domain/ProductFactory'
 import { ProcessOrderInput } from '../dtos/ProcessOrderInput';
 import { ProductDetail } from '../dtos/ProductDetail';
-import { ILogger } from '../lib/ILogger';
+import { LoggerProvider } from '../providers/LoggerProvider';
 import { IOrderRepository } from '../repositories/IOrderRepository';
+import {PaymentFactory} from '../payments/PaymentFactory'
 
 export class orderService {
-    private productFactory:ProductFactory
     private bd:IOrderRepository
-    private logger:ILogger 
+    private logger = LoggerProvider.getLogger();
 
-    constructor(bd:IOrderRepository,logger:ILogger){
-        this.productFactory = new ProductFactory()
+    constructor(bd:IOrderRepository){
         this.bd = bd;
-        this.logger = logger;
     }
 
 
@@ -34,32 +30,16 @@ export class orderService {
 
             if (!product) {
                 throw new Error(`Produto ${item.productId} não encontrado`)
-                return res.status(400).json({ error: `Produto ${item.productId} não encontrado` });
+                //return res.status(400).json({ error: `Produto ${item.productId} não encontrado` });
             }
 
-
             totalAmount += product.price * item.quantity;
-            totalAmount += product.calculateFreight();
-                // Produtos digitais não deveriam ter frete, ok.
-                // Mas se o aluno tentar tratar 'item' genericamente depois, vai ter problemas.
-            
-
+            totalAmount += product.calculateFreight();       
             productsDetails.push( new ProductDetail(product,item.quantity));
         }
 
-        // 3. PROCESSAMENTO DE PAGAMENTO (Violação de OCP)
-        // Se quisermos adicionar "Pix", temos que modificar essa classe.
-        if (paymentMethod === 'credit_card') {
-            logger.info(`Processando cartão final ${paymentDetails.cardNumber.slice(-4)}`);
-            // Simulação de gateway
-            if (paymentDetails.cvv === '000') throw new Error('Cartão recusado');
-
-        } else if (paymentMethod === 'debit_card') {
-            logger.info('Processando débito...');
-            // Lógica de débito
-        } else {
-            return res.status(400).json({ error: 'Método de pagamento não suportado' });
-        }
+        const paymentMethod = PaymentFactory.createPayment(input.paymentMethod,input.paymentDetails)
+        paymentMethod.process
 
         // 4. PERSISTÊNCIA (Violação de SRP - Controller acessando Banco) 
         const order = await prisma.order.create({
