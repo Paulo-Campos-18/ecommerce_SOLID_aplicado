@@ -7,8 +7,7 @@ export class DigitalProduct extends Product{
         super(id,name,price);
         this.megabytes = megabytes
     }
-
-
+    
     calculateFreight(): number {
         return 0;
     }

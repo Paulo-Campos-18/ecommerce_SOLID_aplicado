@@ -1,5 +1,5 @@
 import nodemailer from 'nodemailer';
-import {LoggerProvider} from '../providers/LoggerProvider';
+import {LoggerProvider} from './LoggerProvider';
 
 let transporter: nodemailer.Transporter | null = null;
 const logger  = LoggerProvider.getLogger();

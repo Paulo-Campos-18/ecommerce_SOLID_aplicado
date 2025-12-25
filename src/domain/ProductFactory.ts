@@ -2,7 +2,6 @@ import { Product } from './Product';
 import { PhysicalProduct } from './PhysicalProduct';
 import { DigitalProduct } from './DigitalProduct';
 
-
 export class ProductFactory {
   static createProduct(data: any): Product {
     if (data.type === 'physical') {

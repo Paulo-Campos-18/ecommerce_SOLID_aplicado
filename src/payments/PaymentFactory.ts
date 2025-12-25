@@ -9,18 +9,12 @@ export class PaymentFactory {
         switch (paymentMethod) {
             case "credit_card":
                 return new CreditCard(paymentDetails);
-                break;
-            case "debit_card ":
+            case "debit_card":
                 return new DebitCard(paymentDetails);
-                break;
-
             case "pix":
                 return new PixPayments(paymentDetails)
-                break;
-
             default:
                 throw new Error('Unknown payment method');
-                break;
         }
 
     }

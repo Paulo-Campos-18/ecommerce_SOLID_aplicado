@@ -13,7 +13,6 @@ export class orderService {
         this.bd = bd;
     }
 
-
     async order(input: ProcessOrderInput) {
 
         // 1. VALIDAÇÃO (Deveria estar em outro lugar)
@@ -41,11 +40,11 @@ export class orderService {
 
         // 3. PROCESSAMENTO DE PAGAMENTO
         const paymentMethod = PaymentFactory.createPayment(input.paymentMethod, input.paymentDetails)
-        paymentMethod.process
+        paymentMethod.process()
 
         // 4. PERSISTÊNCIA 
 
-        this.bd.createOrder(new OrderBd(input.customer, productsDetails, totalAmount, "confirmed"))
+        await this.bd.createOrder(new OrderBd(input.customer, productsDetails, totalAmount, "confirmed"))
 
         // 5. NOTIFICAÇÃO (Violação de SRP - Efeitos colaterais no Controller) 
 

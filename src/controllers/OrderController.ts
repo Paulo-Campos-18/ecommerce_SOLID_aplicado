@@ -1,6 +1,4 @@
 import { Request, Response } from 'express';
-import { getMailClient } from '../lib/mail';
-import nodemailer from 'nodemailer';
 import { orderService } from '../services/OrderService'
 import { LoggerProvider } from '../providers/LoggerProvider';
 import { ProcessOrderInput } from '../dtos/ProcessOrderInput';
@@ -19,7 +17,7 @@ export class OrderController {
     this.logger = LoggerProvider.getLogger();
   }
 
-  async processOrder(req: Request, res: Response) {
+    processOrder = async (req: Request, res: Response) => {
     try {
       const input: ProcessOrderInput = {
         customer: req.body.customer,

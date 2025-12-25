@@ -3,7 +3,7 @@ import { IOrderRepository } from './IOrderRepository';
 import { Product } from '../domain/Product';
 import { ProductFactory } from '../domain/ProductFactory';
 import { OrderBd } from '../dtos/OrderBd';
-import {LoggerProvider} from '../providers/LoggerProvider'
+import { LoggerProvider } from '../providers/LoggerProvider'
 
 export const prisma = new PrismaClient()
 let logger = LoggerProvider.getLogger()
@@ -16,16 +16,16 @@ export class PrismaOrderRepository implements IOrderRepository {
         return ProductFactory.createProduct(data);
     }
 
-    async createOrder(orderBd :OrderBd):Promise<void> {
+    async createOrder(orderBd: OrderBd): Promise<void> {
         await prisma.order.create({
             data: {
-                customer : orderBd.costumer,
+                customer: orderBd.costumer,
                 items: JSON.stringify(orderBd.items),
                 total: orderBd.total,
                 status: orderBd.status
             }
         });
-            logger.info("Order adicionada ao banco de dados");
+        logger.info("Order adicionada ao banco de dados");
     }
 }
 

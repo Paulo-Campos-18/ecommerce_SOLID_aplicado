@@ -1,8 +1,10 @@
+import { getMailClient } from "../providers/EtheralMailProvider";
+
 export class notificationService{
     // 5. NOTIFICAÇÃO (Violação de SRP - Efeitos colaterais no Controller) 
       const mailer = await getMailClient();
 
-      const info = await mailer.sendMail({
+      const info = await this.mailer.sendMail({
         from: '"DevStore" <noreply@devstore.com>',
         to: customer, // O email do cliente vindo do body
         subject: `Confirmação do Pedido #${order.id}`,
