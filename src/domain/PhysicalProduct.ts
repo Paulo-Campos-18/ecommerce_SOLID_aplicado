@@ -1,4 +1,4 @@
-import {Product} from './IProduct'
+import {Product} from './Product'
 
 export class PhysicalProduct extends Product{
     weight:number;

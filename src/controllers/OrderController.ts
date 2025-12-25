@@ -1,27 +1,27 @@
 import { Request, Response } from 'express';
 import { getMailClient } from '../lib/mail';
 import nodemailer from 'nodemailer';
-import {orderService} from '../services/OrderService'
-import { ILogger } from '../lib/ILogger';
+import { orderService } from '../services/OrderService'
+import { LoggerProvider } from '../providers/LoggerProvider';
 import { ProcessOrderInput } from '../dtos/ProcessOrderInput';
+import { ILogger } from '../lib/ILogger';
 
 
 
 
 // Lembram do God Class q falamos em aula? Este é um exemplo
 export class OrderController {
-    private service : orderService;
-    private logger:ILogger
+  private service: orderService;
+  private logger: ILogger
 
-  constructor(service:orderService,logger:ILogger){
+  constructor(service: orderService) {
     this.service = service;
-    this.logger = logger
+    this.logger = LoggerProvider.getLogger();
   }
-  
-  // Método Gigante: Violação de SRP
+
   async processOrder(req: Request, res: Response) {
     try {
-       const input: ProcessOrderInput = {
+      const input: ProcessOrderInput = {
         customer: req.body.customer,
         items: req.body.items.map((item: any) => ({
           productId: item.productId,
@@ -31,20 +31,12 @@ export class OrderController {
         paymentDetails: JSON.stringify(req.body.paymentDetails),
       };
 
-      const result = await this.service.order(input)
+      await this.service.order(input)
 
-
-      
-      
     } catch (error: any) {
       //Como não é o foco do trabalho não vou criar um erro para cada tipo, vou usar o tipo genérico e ir mudando as menssagens
-      if(error ){
-        return res.status(400).json({ error: 'Carrinho vazio' });
-      }
-
-
       this.logger.error(`Erro ao processar pedido: ${error.message}`);
-      return res.status(500).json({ error: 'Erro interno' });
+      return res.status(400).json({ error: error.message });
     }
   }
 }

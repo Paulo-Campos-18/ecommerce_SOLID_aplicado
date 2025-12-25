@@ -1,4 +1,4 @@
-import { Product } from './IProduct';
+import { Product } from './Product';
 import { PhysicalProduct } from './PhysicalProduct';
 import { DigitalProduct } from './DigitalProduct';
 

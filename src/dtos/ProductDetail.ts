@@ -1,4 +1,4 @@
-import {Product} from '../domain/IProduct'
+import {Product} from '../domain/Product'
 
 export class ProductDetail {
   product: Product;

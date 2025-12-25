@@ -1,28 +1,31 @@
 import { PrismaClient } from '@prisma/client';
 import { IOrderRepository } from './IOrderRepository';
-import { Product } from '../domain/IProduct';
+import { Product } from '../domain/Product';
 import { ProductFactory } from '../domain/ProductFactory';
+import { OrderBd } from '../dtos/OrderBd';
+import {LoggerProvider} from '../providers/LoggerProvider'
 
 export const prisma = new PrismaClient()
+let logger = LoggerProvider.getLogger()
 
-class PrismaOrderRepository implements IOrderRepository {
-    async findById(idProduto: number): Promise<Product | null> {
+export class PrismaOrderRepository implements IOrderRepository {
+    async findProductById(idProduto: number): Promise<Product | null> {
         const data = await prisma.product.findUnique({ where: { id: idProduto } });
         if (!data) return null;
 
         return ProductFactory.createProduct(data);
     }
 
-    async create(input) {
-        const order = await prisma.order.create({
+    async createOrder(orderBd :OrderBd):Promise<void> {
+        await prisma.order.create({
             data: {
-                customer,
-                items: JSON.stringify(productsDetails),
-                total: totalAmount,
-                status: 'confirmed'
+                customer : orderBd.costumer,
+                items: JSON.stringify(orderBd.items),
+                total: orderBd.total,
+                status: orderBd.status
             }
         });
+            logger.info("Order adicionada ao banco de dados");
     }
-
 }
 

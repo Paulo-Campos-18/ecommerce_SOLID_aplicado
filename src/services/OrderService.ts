@@ -2,18 +2,19 @@ import { ProcessOrderInput } from '../dtos/ProcessOrderInput';
 import { ProductDetail } from '../dtos/ProductDetail';
 import { LoggerProvider } from '../providers/LoggerProvider';
 import { IOrderRepository } from '../repositories/IOrderRepository';
-import {PaymentFactory} from '../payments/PaymentFactory'
+import { PaymentFactory } from '../payments/PaymentFactory'
+import { OrderBd } from '../dtos/OrderBd';
 
 export class orderService {
-    private bd:IOrderRepository
+    private bd: IOrderRepository
     private logger = LoggerProvider.getLogger();
 
-    constructor(bd:IOrderRepository){
+    constructor(bd: IOrderRepository) {
         this.bd = bd;
     }
 
 
-    async order(input:ProcessOrderInput) {
+    async order(input: ProcessOrderInput) {
 
         // 1. VALIDAÇÃO (Deveria estar em outro lugar)
         if (!input.items || input.items.length === 0) {
@@ -23,10 +24,10 @@ export class orderService {
 
         // 2. CÁLCULO DE PREÇO E ESTOQUE (Regra de Negócio Misturada) 
         let totalAmount = 0;
-        let productsDetails:ProductDetail[] = [];
+        let productsDetails: ProductDetail[] = [];
 
         for (const item of input.items) {
-            const product = await this.bd.findById(item.productId);
+            const product = await this.bd.findProductById(item.productId);
 
             if (!product) {
                 throw new Error(`Produto ${item.productId} não encontrado`)
@@ -34,22 +35,20 @@ export class orderService {
             }
 
             totalAmount += product.price * item.quantity;
-            totalAmount += product.calculateFreight();       
-            productsDetails.push( new ProductDetail(product,item.quantity));
+            totalAmount += product.calculateFreight();
+            productsDetails.push(new ProductDetail(product, item.quantity));
         }
 
-        const paymentMethod = PaymentFactory.createPayment(input.paymentMethod,input.paymentDetails)
+        // 3. PROCESSAMENTO DE PAGAMENTO
+        const paymentMethod = PaymentFactory.createPayment(input.paymentMethod, input.paymentDetails)
         paymentMethod.process
 
-        // 4. PERSISTÊNCIA (Violação de SRP - Controller acessando Banco) 
-        const order = await prisma.order.create({
-            data: {
-                customer,
-                items: JSON.stringify(productsDetails),
-                total: totalAmount,
-                status: 'confirmed'
-            }
-        });
+        // 4. PERSISTÊNCIA 
+
+        this.bd.createOrder(new OrderBd(input.customer, productsDetails, totalAmount, "confirmed"))
+
+        // 5. NOTIFICAÇÃO (Violação de SRP - Efeitos colaterais no Controller) 
+
     }
 
 }
