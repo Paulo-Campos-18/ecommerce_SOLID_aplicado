@@ -4,7 +4,6 @@ import { LoggerProvider } from '../providers/LoggerProvider';
 import { ProcessOrderInput } from '../dtos/ProcessOrderInput';
 import { ILogger } from '../lib/ILogger';
 
-// Lembram do God Class q falamos em aula? Este é um exemplo
 export class OrderController {
   private service: orderService;
   private logger: ILogger
