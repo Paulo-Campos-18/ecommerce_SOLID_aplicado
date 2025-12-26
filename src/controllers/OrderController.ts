@@ -4,9 +4,6 @@ import { LoggerProvider } from '../providers/LoggerProvider';
 import { ProcessOrderInput } from '../dtos/ProcessOrderInput';
 import { ILogger } from '../lib/ILogger';
 
-
-
-
 // Lembram do God Class q falamos em aula? Este é um exemplo
 export class OrderController {
   private service: orderService;
@@ -17,7 +14,7 @@ export class OrderController {
     this.logger = LoggerProvider.getLogger();
   }
 
-    processOrder = async (req: Request, res: Response) => {
+  processOrder = async (req: Request, res: Response) => {
     try {
       const input: ProcessOrderInput = {
         customer: req.body.customer,
@@ -29,7 +26,14 @@ export class OrderController {
         paymentDetails: JSON.stringify(req.body.paymentDetails),
       };
 
-      await this.service.order(input)
+      const result = await this.service.order(input)
+
+      return res.status(200).json({
+        message: 'Pedido processado com sucesso',
+        orderId: result.orderId,
+        emailPreview: result.emailPreview // Retorna o link na API para facilitar
+      });
+
 
     } catch (error: any) {
       //Como não é o foco do trabalho não vou criar um erro para cada tipo, vou usar o tipo genérico e ir mudando as menssagens

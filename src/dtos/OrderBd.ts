@@ -8,8 +8,9 @@ export class OrderBd{
     items:ProductDetail[];
     total:number;
     status:string;
+    createdAt? : Date
 
-    constructor(costumer:string,items:ProductDetail[],total:number,status:string,id?:number){
+    constructor(costumer:string,items:ProductDetail[],total:number,status:string,id?:number,createdAt?:Date){
         this.costumer=costumer
         this.items= items
         this.total=total
@@ -17,5 +18,8 @@ export class OrderBd{
         if(id != null){
             this.id = id
         }else this.id = undefined;
+        if(createdAt != null){
+            this.createdAt = createdAt
+        }else this.createdAt = undefined
     }
 }

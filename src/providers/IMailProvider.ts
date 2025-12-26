@@ -1,3 +1,5 @@
+import { EmailContent } from "../dtos/emailContent";
+
 export interface IMailProvider{
-    sendMail():Promise<void>
+    sendMail(emailContent:EmailContent):Promise<string>
 }

@@ -9,7 +9,7 @@ export class PixPayments implements IPaymentMethod {
     }
     process(): void {
         const detailsJson = JSON.parse(this.details)
-        if(!detailsJson.cpf) throw new Error("pix recusado, cpf no formato incorreto")
+        if(!detailsJson.cpf) throw new Error("Pix recusado: cpf no formato incorreto ou inexistente")
         this.logger.info("Sucesso na transação com pix de cpf final " + detailsJson.cpf.slice(-4));
     }
 }

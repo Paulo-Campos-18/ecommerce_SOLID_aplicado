@@ -16,8 +16,8 @@ export class PrismaOrderRepository implements IOrderRepository {
         return ProductFactory.createProduct(data);
     }
 
-    async createOrder(orderBd: OrderBd): Promise<void> {
-        await prisma.order.create({
+    async createOrder(orderBd: OrderBd): Promise<{orderId:number,createAt:Date}> {
+        const order =  await prisma.order.create({
             data: {
                 customer: orderBd.costumer,
                 items: JSON.stringify(orderBd.items),
@@ -26,6 +26,8 @@ export class PrismaOrderRepository implements IOrderRepository {
             }
         });
         logger.info("Order adicionada ao banco de dados");
+        
+        return {orderId : order.id,createAt:order.createdAt}
     }
 }
 
