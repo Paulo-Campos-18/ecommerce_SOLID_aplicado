@@ -11,7 +11,7 @@ export class NotificationService {
 
         const info = {
             from: '"DevStore" <noreply@devstore.com>',
-            to: orderData.customer, // O email do cliente vindo do body
+            to: orderData.customer, 
             subject: `Confirmação do Pedido #${orderData.orderId}`,
             text: `Olá, seu pedido #${orderData.orderId} no valor de R$ ${orderData.totalAmount} foi confirmado.`,
             html: `
